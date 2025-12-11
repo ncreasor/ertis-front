@@ -9,8 +9,8 @@ export const mockUsers = {
     first_name: "Асет",
     last_name: "Нурсултанов",
     role: "citizen" as const,
-    is_active: true,
     created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-15T10:00:00Z",
   },
   employee: {
     id: 2,
@@ -20,8 +20,8 @@ export const mockUsers = {
     first_name: "Болат",
     last_name: "Сарсенбаев",
     role: "employee" as const,
-    is_active: true,
     created_at: "2024-01-10T09:00:00Z",
+    updated_at: "2024-01-10T09:00:00Z",
     specialization: "electricity",
   },
   admin: {
@@ -32,8 +32,8 @@ export const mockUsers = {
     first_name: "Айгуль",
     last_name: "Абдрахманова",
     role: "admin" as const,
-    is_active: true,
     created_at: "2024-01-01T08:00:00Z",
+    updated_at: "2024-01-01T08:00:00Z",
   },
 };
 
@@ -262,17 +262,17 @@ export const mockLogin = async (username: string, password: string) => {
 // Mock registration
 export const mockRegister = async (data: any) => {
   await mockDelay(1000);
-  
+
   const newUser = {
     id: Math.floor(Math.random() * 10000),
     ...data,
     role: "citizen" as const,
-    is_active: true,
     created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
-  
+
   const { password: _, ...userWithoutPassword } = newUser;
-  
+
   return {
     access_token: `mock_token_${newUser.id}_${Date.now()}`,
     token_type: "Bearer",

@@ -11,8 +11,8 @@ export interface User {
   first_name: string;
   last_name: string;
   role: 'citizen' | 'employee' | 'admin';
-  is_active: boolean;
   created_at: string;
+  updated_at: string;
 }
 
 export interface RegisterData {
@@ -276,6 +276,14 @@ class ApiClient {
 
   async geocodeAddress(address: string): Promise<any> {
     return this.request<any>(`/addresses/geocode?address=${encodeURIComponent(address)}`);
+  }
+
+  // Chat
+  async sendChatMessage(message: string, history?: any[]): Promise<any> {
+    return this.request<any>('/chat/message', {
+      method: 'POST',
+      body: JSON.stringify({ message, history }),
+    });
   }
 }
 

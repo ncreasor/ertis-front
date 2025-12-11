@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { X, Send, Bot, User } from "lucide-react";
+import api from "@/lib/api";
 
 interface Message {
   id: number;
@@ -32,45 +33,7 @@ export function ChatBot() {
     scrollToBottom();
   }, [messages]);
 
-  const getBotResponse = (userMessage: string): string => {
-    const msg = userMessage.toLowerCase();
-
-    if (msg.includes("заявк") || msg.includes("проблем")) {
-      return "Чтобы подать заявку, нажмите на кнопку 'Подать заявку' на главной странице или перейдите в раздел 'Создать заявку'. Вам нужно будет сделать фото проблемы, добавить описание и указать адрес.";
-    }
-    
-    if (msg.includes("статус") || msg.includes("отслед")) {
-      return "Вы можете отслеживать статус своих заявок в разделе 'История заявок'. Там отображаются все ваши обращения с текущими статусами.";
-    }
-    
-    if (msg.includes("категор") || msg.includes("электр") || msg.includes("вод") || msg.includes("дорог")) {
-      return "Мы работаем с 6 категориями проблем: Электричество, Водопровод, Дороги, Мусор, Уборка и Благоустройство. Выберите подходящую категорию при создании заявки.";
-    }
-    
-    if (msg.includes("время") || msg.includes("быстр") || msg.includes("долго")) {
-      return "Среднее время обработки заявки составляет менее 24 часов. Наш AI автоматически назначит подходящего специалиста, который свяжется с вами в ближайшее время.";
-    }
-    
-    if (msg.includes("регистр") || msg.includes("аккаунт")) {
-      return "Для регистрации перейдите на страницу 'Регистрация', заполните форму с вашими данными. После регистрации вы сможете подавать заявки и отслеживать их статус.";
-    }
-    
-    if (msg.includes("карт") || msg.includes("где")) {
-      return "В разделе 'Карта проблем' вы можете увидеть все активные заявки по городу Павлодар. Это помогает понять, какие районы требуют внимания.";
-    }
-    
-    if (msg.includes("привет") || msg.includes("здравств")) {
-      return "Здравствуйте! Рад помочь вам с любыми вопросами по работе сервиса. Что вас интересует?";
-    }
-    
-    if (msg.includes("спасибо") || msg.includes("благодар")) {
-      return "Пожалуйста! Всегда рад помочь. Если у вас есть ещё вопросы - обращайтесь!";
-    }
-
-    return "Спасибо за ваш вопрос! Вы можете создать заявку на главной странице, проверить статус в истории заявок или связаться с нашей поддержкой. Чем ещё могу помочь?";
-  };
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -81,20 +44,40 @@ export function ChatBot() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const userInput = input;
     setInput("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const botResponse = getBotResponse(input);
+    try {
+      // Формируем историю для API
+      const history = messages.map(msg => ({
+        role: msg.isBot ? 'assistant' : 'user',
+        content: msg.text
+      }));
+
+      // Получаем ответ от API
+      const response = await api.sendChatMessage(userInput, history);
+
       const botMessage: Message = {
         id: messages.length + 2,
-        text: botResponse,
+        text: response.message,
         isBot: true,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Ошибка чата:', error);
+      // Fallback ответ при ошибке
+      const botMessage: Message = {
+        id: messages.length + 2,
+        text: "Извините, произошла ошибка. Пожалуйста, попробуйте позже.",
+        isBot: true,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1000 + Math.random() * 1000);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
