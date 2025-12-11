@@ -3,16 +3,18 @@
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { LogIn, ArrowRight } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import api from "@/lib/api";
 
-export default function LoginPage() {
+// Separate component for search params logic
+function LoginForm() {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -36,27 +38,15 @@ export default function LoginPage() {
     setSuccess("");
 
     try {
-      // REAL API MODE - Connected to backend
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+      // Use API client to login
+      const data = await api.login({
+        email: formData.email,
+        password: formData.password,
       });
 
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({ detail: 'Неверный email или пароль' }));
-        throw new Error(data.detail || 'Неверный email или пароль');
-      }
-
-      const data = await response.json();
-      
-      // Store token and user data
-      localStorage.setItem('access_token', data.access_token);
+      // Store token and user data (already done in api.login, but set user)
       localStorage.setItem('user', JSON.stringify(data.user));
-      
+
       // Redirect based on role
       if (data.user.role === 'employee') {
         window.location.href = '/worker/map';
@@ -65,33 +55,15 @@ export default function LoginPage() {
       } else {
         window.location.href = '/';
       }
-      
-      /* MOCK MODE - For testing without backend
-      const { mockLogin } = await import('@/lib/mockData');
-      const data = await mockLogin(formData.email, formData.password);
-      
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      if (data.user.role === 'worker') {
-        window.location.href = '/worker/map';
-      } else if (data.user.role === 'admin') {
-        window.location.href = '/admin';
-      } else {
-        window.location.href = '/';
-      }
-      */
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка');
+      setError(err instanceof Error ? err.message : 'Неверный email или пароль');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
+    <>
       <main className="flex-1 flex items-center justify-center px-4 md:px-6 py-12">
         <div className="card-unified w-full max-w-md">
           {/* Header */}
@@ -147,8 +119,8 @@ export default function LoginPage() {
             </div>
 
             <div className="text-right">
-              <Link 
-                href="/forgot-password" 
+              <Link
+                href="/forgot-password"
                 className="text-sm text-gray-500 hover:text-primary transition-colors"
               >
                 Забыли пароль?
@@ -180,6 +152,23 @@ export default function LoginPage() {
           </p>
         </div>
       </main>
+    </>
+  );
+}
+
+// Main component with Suspense boundary
+export default function LoginPage() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+
+      <Suspense fallback={
+        <main className="flex-1 flex items-center justify-center">
+          <div className="animate-spin text-primary">⏳</div>
+        </main>
+      }>
+        <LoginForm />
+      </Suspense>
 
       <ChatBot />
     </div>

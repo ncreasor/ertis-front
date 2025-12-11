@@ -5,6 +5,7 @@ import { ChatBot } from "@/components/ChatBot";
 import Link from "next/link";
 import { useState } from "react";
 import { UserPlus, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import api from "@/lib/api";
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
@@ -67,76 +68,17 @@ export default function RegisterPage() {
         username: formData.username,
         first_name: formData.firstName,
         last_name: formData.lastName,
-        middle_name: formData.middleName || undefined, // Use undefined instead of null
+        middle_name: formData.middleName || undefined,
         phone: formData.phone,
       };
 
-      console.log('Sending registration request:', { ...requestData, password: '***' });
-
-      // REAL API MODE - Connected to backend
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(requestData),
-      });
-
-      console.log('Response status:', response.status);
-
-      if (!response.ok) {
-        const contentType = response.headers.get('content-type');
-        let errorData;
-        
-        if (contentType && contentType.includes('application/json')) {
-          errorData = await response.json();
-        } else {
-          const text = await response.text();
-          console.error('Non-JSON response:', text);
-          errorData = { detail: 'Ошибка сервера. Попробуйте позже.' };
-        }
-
-        console.error('Registration error:', errorData);
-        
-        // Handle specific error messages
-        if (errorData.detail) {
-          if (typeof errorData.detail === 'string') {
-            throw new Error(errorData.detail);
-          } else if (Array.isArray(errorData.detail)) {
-            const errorMessages = errorData.detail.map((e: any) => {
-              if (typeof e === 'string') return e;
-              if (e.msg) return `${e.loc?.join('.') || 'Поле'}: ${e.msg}`;
-              return JSON.stringify(e);
-            }).join('\n');
-            throw new Error(errorMessages);
-          }
-        }
-        throw new Error('Ошибка регистрации. Проверьте введенные данные.');
-      }
-
-      const data = await response.json();
-      console.log('Registration successful:', { email: data.user?.email });
+      // Use API client to register
+      await api.register(requestData);
 
       // Redirect to login on success
       window.location.href = '/login?registered=true';
-      
-      /* MOCK MODE - For testing without backend
-      const { mockRegister } = await import('@/lib/mockData');
-      await mockRegister({
-        email: formData.email,
-        password: formData.password,
-        username: formData.username,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        middle_name: formData.middleName || null,
-        phone: formData.phone,
-      });
-
-      window.location.href = '/login?registered=true';
-      */
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка');
+      setError(err instanceof Error ? err.message : 'Произошла ошибка регистрации');
     } finally {
       setIsLoading(false);
     }
