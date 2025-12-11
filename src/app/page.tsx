@@ -1,0 +1,251 @@
+"use client";
+
+import { Header } from "@/components/Header";
+import { ChatBot } from "@/components/ChatBot";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { 
+  Zap, Droplet, Construction, Trash2, Sparkles, TreeDeciduous,
+  Camera, FileText, CheckCircle, MapPin, Clock, Users, ArrowRight
+} from "lucide-react";
+
+const categories = [
+  { id: "electricity", label: "Электричество", icon: Zap, color: "from-yellow-500 to-orange-500" },
+  { id: "water", label: "Водопровод", icon: Droplet, color: "from-blue-500 to-cyan-500" },
+  { id: "roads", label: "Дороги", icon: Construction, color: "from-gray-500 to-slate-600" },
+  { id: "garbage", label: "Мусор", icon: Trash2, color: "from-green-500 to-emerald-600" },
+  { id: "cleaning", label: "Уборка", icon: Sparkles, color: "from-purple-500 to-pink-500" },
+  { id: "landscaping", label: "Благоустройство", icon: TreeDeciduous, color: "from-emerald-500 to-teal-500" },
+];
+
+const stats = [
+  { value: "15K+", label: "Решенных проблем", icon: CheckCircle },
+  { value: "45", label: "Специалистов", icon: Users },
+  { value: "< 24ч", label: "Среднее время", icon: Clock },
+  { value: "98%", label: "Довольных граждан", icon: MapPin },
+];
+
+export default function Home() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+
+      <main className="flex-1 px-4 md:px-6 lg:px-8 py-8">
+        {/* Hero Section with Bento Grid */}
+        <section className="max-w-7xl mx-auto mb-16">
+          {/* Title */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-primary via-cyan-400 to-primary bg-clip-text text-transparent">
+                Сообщайте о проблемах
+              </span>
+              <br />
+              <span className="text-white">—Улучшайте </span>
+              <span className="bg-gradient-to-r from-accent to-yellow-500 bg-clip-text text-transparent">
+                Павлодар
+              </span>
+            </h1>
+          </div>
+
+          {/* Bento Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[260px] md:auto-rows-[220px]">
+            {/* Main CTA - Large */}
+            <div className="bento-item md:col-span-2 lg:col-span-2 lg:row-span-2 flex flex-col justify-center p-6 md:p-8 group">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs md:text-sm">
+                  <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
+                  <span>AI-задачи</span>
+                </div>
+                <h2 className="text-lg md:text-2xl lg:text-3xl font-bold text-white leading-snug">
+                  Фотографируйте, описывайте и&nbsp;отправляйте
+                </h2>
+                <p className="text-gray-400 text-sm md:text-base">
+                  а наши службы всё исправят
+                </p>
+                <Button
+                  asChild
+                  size="lg"
+                  className="w-fit bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-black font-semibold px-5 md:px-8 py-2.5 md:py-5 rounded-xl group-hover:shadow-lg group-hover:shadow-primary/30 transition-all text-sm"
+                >
+                  <Link href="/create-request" className="flex items-center gap-2">
+                    Подать заявку
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* How it works - Steps */}
+            <div className="bento-item lg:row-span-2 flex flex-col p-6 md:p-7">
+              <h3 className="text-base md:text-lg font-semibold text-white mb-6">Как это работает?</h3>
+              <div className="space-y-6 flex-1 flex flex-col justify-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                    <Camera className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium text-sm md:text-base leading-tight">1. Сделайте фото</p>
+                    <p className="text-gray-500 text-xs md:text-sm leading-tight">проблемы</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5 md:w-6 md:h-6 text-accent" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium text-sm md:text-base leading-tight">2. Добавьте описание</p>
+                    <p className="text-gray-500 text-xs md:text-sm leading-tight">и адрес</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center shrink-0">
+                    <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium text-sm md:text-base leading-tight">3. Мы поможем вам!</p>
+                    <p className="text-gray-500 text-xs md:text-sm leading-tight">AI назначит задачу</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Stats Cards - Hidden on mobile */}
+            {stats.slice(0, 2).map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="bento-item hidden lg:flex flex-col justify-center items-center text-center p-6 group">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-transparent flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <Icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
+                  <p className="text-gray-500 text-sm">{stat.label}</p>
+                </div>
+              );
+            })}
+
+            {/* Map Preview */}
+            <div className="bento-item lg:col-span-2 flex items-center justify-between p-4 md:p-6 group cursor-pointer">
+              <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                <div className="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-transparent flex items-center justify-center shrink-0">
+                  <MapPin className="w-5 h-5 md:w-7 md:h-7 text-accent" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-semibold text-sm md:text-lg truncate">Карта проблем</p>
+                  <p className="text-gray-500 text-xs md:text-sm hidden sm:block">Смотрите активные заявки по городу</p>
+                </div>
+              </div>
+              <Link href="/map" className="shrink-0">
+                <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-gray-500 group-hover:text-accent group-hover:translate-x-2 transition-all" />
+              </Link>
+            </div>
+
+            {/* More Stats - Hidden on mobile */}
+            {stats.slice(2).map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="bento-item hidden lg:flex flex-col justify-center items-center text-center p-6 group">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent/20 to-transparent flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <Icon className="w-6 h-6 text-accent" />
+                  </div>
+                  <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
+                  <p className="text-gray-500 text-sm">{stat.label}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Categories Section */}
+        <section className="max-w-7xl mx-auto mb-16">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              С чем мы поможем?
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Выберите категорию проблемы и сообщите о ней. Наш AI автоматически назначит подходящего специалиста.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+            {categories.map((cat) => {
+              const Icon = cat.icon;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    // Анимация при клике
+                    const btn = document.getElementById(`cat-${cat.id}`);
+                    btn?.classList.add('animate-pulse');
+                    setTimeout(() => {
+                      btn?.classList.remove('animate-pulse');
+                      // Redirect after animation
+                      window.location.href = `/create-request?category=${cat.id}`;
+                    }, 500);
+                  }}
+                  id={`cat-${cat.id}`}
+                  className="group relative"
+                >
+                  <div className="bento-item flex flex-col items-center justify-center text-center p-4 md:p-6 h-[120px] md:h-[140px] hover:border-primary/40 active:scale-95 transition-transform">
+                    <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br ${cat.color} flex items-center justify-center mb-2 md:mb-3 group-hover:scale-110 group-hover:shadow-lg transition-all shrink-0`}>
+                      <Icon className="w-6 h-6 md:w-7 md:h-7 text-white shrink-0" />
+                    </div>
+                    <p className="text-white font-medium text-xs md:text-sm leading-tight">{cat.label}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="max-w-4xl mx-auto mb-16">
+          <div className="bento-item p-8 md:p-12 text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5" />
+            <div className="relative z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                Готовы сделать город лучше?
+              </h2>
+              <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+                Присоединяйтесь к тысячам граждан, которые уже помогают улучшать Павлодар
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-black font-semibold px-8"
+                >
+                  <Link href="/create-request">Подать заявку</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="border-gray-700 hover:border-gray-600 hover:bg-white/5"
+                >
+                  <Link href="/map">Смотреть карту</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="py-12 text-center border-t border-white/5">
+        <p 
+          className="text-4xl md:text-5xl lg:text-6xl font-bold"
+          style={{
+            background: 'linear-gradient(90deg, #FFD700 0%, #FFEC2D 20%, #10B981 50%, #00BCD4 80%, #0088FF 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          Made in Kazakhstan
+        </p>
+      </footer>
+
+      <ChatBot />
+    </div>
+  );
+}

@@ -1,0 +1,37 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circular text path background -->
+  <defs>
+    <path id="circlePath" d="M 50,50 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0"/>
+  </defs>
+  
+  <!-- Center ornamental design in teal -->
+  <g fill="#17a2b8" stroke="#17a2b8" stroke-width="2">
+    <!-- Left curves -->
+    <path d="M 30,40 Q 25,45 30,50 Q 25,55 30,60" fill="none" stroke-linecap="round"/>
+    <!-- Right curves -->
+    <path d="M 70,40 Q 75,45 70,50 Q 75,55 70,60" fill="none" stroke-linecap="round"/>
+    <!-- Center wave pattern -->
+    <path d="M 35,50 Q 42,40 50,45 Q 58,50 65,50" fill="none" stroke-linecap="round"/>
+    <!-- Bottom curves -->
+    <path d="M 40,60 Q 45,70 50,65 Q 55,70 60,60" fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Decorative spirals in orange -->
+  <g fill="none" stroke="#f57c00" stroke-width="1.5">
+    <circle cx="35" cy="45" r="2"/>
+    <circle cx="65" cy="45" r="2"/>
+    <path d="M 42,38 Q 40,35 38,37" stroke-linecap="round"/>
+    <path d="M 58,38 Q 60,35 62,37" stroke-linecap="round"/>
+  </g>
+  
+  <!-- WL letters in center -->
+  <text x="43" y="55" font-size="16" font-weight="bold" fill="#17a2b8" font-family="Montserrat">WL</text>
+  
+  <!-- Circular text in orange -->
+  <text font-size="9" font-weight="600" font-family="Montserrat" fill="#f57c00">
+    <textPath href="#circlePath" startOffset="5%">
+      ERTIS SERVICE • ЕРТІС ЖАҒАСЫНДА •
+    </textPath>
+  </text>
+</svg>
+
