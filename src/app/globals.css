@@ -200,6 +200,11 @@ body::before {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.bento-item > * {
+  position: relative;
+  z-index: 1; /* Ensure content is above ::before overlay */
+}
+
 .bento-item::before {
   content: '';
   position: absolute;
@@ -207,6 +212,7 @@ body::before {
   background: radial-gradient(circle at 50% 0%, rgba(0, 188, 212, 0.08), transparent 60%);
   opacity: 0;
   transition: opacity 0.4s ease;
+  pointer-events: none; /* Allow clicks to pass through */
 }
 
 .bento-item:hover {

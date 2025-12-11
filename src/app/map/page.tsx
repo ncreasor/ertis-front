@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
+import { YandexMap } from "@/components/YandexMap";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Zap, Droplet, Construction } from "lucide-react";
@@ -65,50 +66,23 @@ export default function MapPage() {
           </h1>
 
           <div className="grid lg:grid-cols-3 gap-6">
-            {/* Map Placeholder */}
+            {/* Yandex Map */}
             <div className="lg:col-span-2">
               <Card className="glass-card border-primary/20 h-[600px]">
-                <CardContent className="p-0 h-full relative">
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-card to-card-light rounded-lg">
-                    <div className="text-center">
-                      <MapPin className="h-16 w-16 text-primary mx-auto mb-4" />
-                      <p className="text-text-secondary">
-                        Здесь будет интерактивная карта
-                      </p>
-                      <p className="text-sm text-text-secondary mt-2">
-                        Интеграция с Google Maps / Yandex Maps / 2GIS
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Map markers simulation */}
-                  {mockProblems.map((problem, index) => {
-                    const Icon = problem.icon;
-                    return (
-                      <button
-                        key={problem.id}
-                        onClick={() => setSelectedProblem(problem)}
-                        className={`absolute w-12 h-12 rounded-full bg-card border-2 ${
-                          problem.status === "pending"
-                            ? "border-yellow-500"
-                            : problem.status === "in_progress"
-                            ? "border-primary"
-                            : "border-green-500"
-                        } flex items-center justify-center hover:scale-110 transition-transform z-10`}
-                        style={{
-                          left: `${20 + index * 25}%`,
-                          top: `${30 + index * 15}%`,
-                        }}
-                      >
-                        <Icon className="h-5 w-5 text-white" />
-                        {problem.count > 1 && (
-                          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                            {problem.count}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
+                <CardContent className="p-4 h-full">
+                  <YandexMap
+                    markers={mockProblems.map(problem => ({
+                      id: problem.id,
+                      lat: problem.lat,
+                      lng: problem.lng,
+                      title: problem.category,
+                      description: problem.description,
+                      status: problem.status,
+                      onClick: () => setSelectedProblem(problem)
+                    }))}
+                    selectedMarkerId={selectedProblem?.id}
+                    height="100%"
+                  />
                 </CardContent>
               </Card>
             </div>

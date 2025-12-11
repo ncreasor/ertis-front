@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 import { useState } from "react";
 import { Camera, ChevronRight, Send, ArrowLeft, MapPin, Loader2 } from "lucide-react";
 import { Zap, Droplet, Construction, Trash2, Sparkles, TreeDeciduous } from "lucide-react";
@@ -306,34 +307,36 @@ export default function CreateRequestPage() {
               <div className="space-y-6 animate-slide-in">
                 <div>
                   <label className="block text-sm text-gray-400 mb-2">Адрес</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      placeholder="Введите адрес"
-                      className="input-unified pr-12"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={handleGetLocation}
-                      disabled={isLocating}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-primary transition-colors"
-                      title="Определить местоположение"
-                    >
-                      {isLocating ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <MapPin className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
+                  <AddressAutocomplete
+                    value={address}
+                    onChange={setAddress}
+                    onCoordinatesChange={(lat, lng) => setCoords({ lat, lng })}
+                    placeholder="Начните вводить адрес..."
+                    className="input-unified"
+                  />
                   {coords && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 mt-2">
                       📍 Координаты: {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
                     </p>
                   )}
+                  <button
+                    type="button"
+                    onClick={handleGetLocation}
+                    disabled={isLocating}
+                    className="text-sm text-primary hover:text-primary/80 transition-colors mt-2 flex items-center gap-2"
+                  >
+                    {isLocating ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Определяем местоположение...
+                      </>
+                    ) : (
+                      <>
+                        <MapPin className="w-4 h-4" />
+                        Или определить мое местоположение
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 <div>

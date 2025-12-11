@@ -53,7 +53,8 @@ function LoginForm() {
       } else if (data.user.role === 'admin') {
         window.location.href = '/admin';
       } else {
-        window.location.href = '/';
+        // Redirect citizens to dashboard
+        window.location.href = '/dashboard';
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Неверный username или пароль');
