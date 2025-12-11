@@ -8,8 +8,6 @@ export const mockUsers = {
     password: "test123",
     first_name: "Асет",
     last_name: "Нурсултанов",
-    middle_name: "Ерболович",
-    phone: "+7 (702) 123-45-67",
     role: "citizen" as const,
     is_active: true,
     created_at: "2024-01-15T10:00:00Z",
@@ -21,8 +19,6 @@ export const mockUsers = {
     password: "test123",
     first_name: "Болат",
     last_name: "Сарсенбаев",
-    middle_name: "Маратович",
-    phone: "+7 (701) 234-56-78",
     role: "employee" as const,
     is_active: true,
     created_at: "2024-01-10T09:00:00Z",
@@ -35,8 +31,6 @@ export const mockUsers = {
     password: "admin123",
     first_name: "Айгуль",
     last_name: "Абдрахманова",
-    middle_name: "Серикқызы",
-    phone: "+7 (700) 345-67-89",
     role: "admin" as const,
     is_active: true,
     created_at: "2024-01-01T08:00:00Z",
@@ -245,15 +239,15 @@ export const mockDelay = (ms: number = 500) =>
   new Promise(resolve => setTimeout(resolve, ms));
 
 // Mock authentication
-export const mockLogin = async (email: string, password: string) => {
+export const mockLogin = async (username: string, password: string) => {
   await mockDelay(800);
-  
+
   const user = Object.values(mockUsers).find(
-    u => u.email === email && u.password === password
+    u => u.username === username && u.password === password
   );
-  
+
   if (!user) {
-    throw new Error("Неверный email или пароль");
+    throw new Error("Неверный username или пароль");
   }
   
   const { password: _, ...userWithoutPassword } = user;

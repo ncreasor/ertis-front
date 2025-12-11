@@ -6,29 +6,25 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ertis-servise-e
 // Types
 export interface User {
   id: number;
-  email: string;
+  email?: string;
   username: string;
   first_name: string;
   last_name: string;
-  middle_name?: string;
-  phone: string;
   role: 'citizen' | 'employee' | 'admin';
   is_active: boolean;
   created_at: string;
 }
 
 export interface RegisterData {
-  email: string;
+  email?: string;
   password: string;
   username: string;
   first_name: string;
   last_name: string;
-  middle_name?: string;
-  phone: string;
 }
 
 export interface LoginData {
-  email: string;
+  username: string;
   password: string;
 }
 

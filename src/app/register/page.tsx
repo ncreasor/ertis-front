@@ -19,8 +19,6 @@ export default function RegisterPage() {
     username: "",
     firstName: "",
     lastName: "",
-    middleName: "",
-    phone: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,8 +66,6 @@ export default function RegisterPage() {
         username: formData.username,
         first_name: formData.firstName,
         last_name: formData.lastName,
-        middle_name: formData.middleName || undefined,
-        phone: formData.phone,
       };
 
       // Use API client to register
@@ -85,7 +81,7 @@ export default function RegisterPage() {
   };
 
   const isStep1Valid = formData.email && formData.password && formData.confirmPassword && formData.username;
-  const isStep2Valid = formData.firstName && formData.lastName && formData.phone;
+  const isStep2Valid = formData.firstName && formData.lastName;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -211,31 +207,6 @@ export default function RegisterPage() {
                     required
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Отчество</label>
-                <input
-                  type="text"
-                  name="middleName"
-                  value={formData.middleName}
-                  onChange={handleChange}
-                  className="input-unified"
-                  placeholder="Отчество (необязательно)"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Телефон</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="input-unified"
-                  placeholder="+7 (___) ___-__-__"
-                  required
-                />
               </div>
 
               <div className="flex gap-3 mt-6">

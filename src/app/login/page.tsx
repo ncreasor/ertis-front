@@ -16,7 +16,7 @@ function LoginForm() {
   const [success, setSuccess] = useState("");
 
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
@@ -40,7 +40,7 @@ function LoginForm() {
     try {
       // Use API client to login
       const data = await api.login({
-        email: formData.email,
+        username: formData.username,
         password: formData.password,
       });
 
@@ -56,7 +56,7 @@ function LoginForm() {
         window.location.href = '/';
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Неверный email или пароль');
+      setError(err instanceof Error ? err.message : 'Неверный username или пароль');
     } finally {
       setIsLoading(false);
     }
@@ -91,14 +91,14 @@ function LoginForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-400 mb-2">Email</label>
+              <label className="block text-sm text-gray-400 mb-2">Логин (username)</label>
               <input
-                type="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
                 className="input-unified"
-                placeholder="example@gmail.com"
+                placeholder="Введите логин"
                 required
                 disabled={isLoading}
               />

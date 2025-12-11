@@ -10,7 +10,18 @@
 - ✅ `src/lib/mockData.ts` - моковый юзер переименован в `employee`
 - ✅ `src/app/login/page.tsx` - проверка роли `'employee'`
 
-### 3. **API Client интеграция**
+### 3. **Убраны phone и middle_name**
+- ✅ Удалены поля `phone` и `middle_name` из интерфейса User
+- ✅ Удалены из RegisterData
+- ✅ Удалены из формы регистрации `src/app/register/page.tsx`
+- ✅ Удалены из mockData.ts
+
+### 4. **Логин по username вместо email**
+- ✅ `src/app/login/page.tsx` - изменен с email на username
+- ✅ `src/lib/api.ts` - LoginData использует username
+- ✅ Бэкенд также использует username для логина
+
+### 5. **API Client интеграция**
 - ✅ Login использует `api.login()`
 - ✅ Register использует `api.register()`
 
@@ -47,27 +58,45 @@ vercel --prod
 
 ---
 
-## 📋 Что изменилось в типах:
+## 📋 Что изменилось:
 
-### ДО:
+### Типы ролей:
 ```typescript
-// api.ts
+// ДО:
 role: 'citizen' | 'worker' | 'admin'  // ❌ worker не существует в бэке
 
-// login/page.tsx
-if (data.user.role === 'employee') {  // ❌ TypeScript ошибка
-  window.location.href = '/worker/map';
+// ПОСЛЕ:
+role: 'citizen' | 'employee' | 'admin'  // ✅ Совпадает с бэком
+```
+
+### Логин:
+```typescript
+// ДО:
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+// ПОСЛЕ:
+interface LoginData {
+  username: string;  // ✅ Используется username
+  password: string;
 }
 ```
 
-### ПОСЛЕ:
+### User и RegisterData:
 ```typescript
-// api.ts
-role: 'citizen' | 'employee' | 'admin'  // ✅ Совпадает с бэком
+// ДО:
+interface User {
+  middle_name?: string;
+  phone: string;
+  // ...
+}
 
-// login/page.tsx
-if (data.user.role === 'employee') {  // ✅ TypeScript OK
-  window.location.href = '/worker/map';
+// ПОСЛЕ:
+interface User {
+  // ✅ Убраны phone и middle_name
+  // ...
 }
 ```
 
@@ -78,7 +107,9 @@ if (data.user.role === 'employee') {  // ✅ TypeScript OK
 - [x] Suspense boundary для useSearchParams
 - [x] Типы ролей совпадают с бэком (citizen/employee/admin)
 - [x] API client используется вместо прямых fetch
-- [x] Mock данные обновлены
+- [x] Mock данные обновлены (без phone и middle_name)
+- [x] Логин по username вместо email
+- [x] Убраны phone и middle_name из всех форм и типов
 - [x] .env.local содержит правильный API_URL
 
 ---
