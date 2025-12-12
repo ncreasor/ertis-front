@@ -3,9 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Logo, LogoText } from "./Logo";
-import { usePathname } from "next/navigation";
-import { Menu, X, Bell, User } from "lucide-react";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X, Bell, User, LogOut } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface HeaderProps {
   isLoggedIn?: boolean;
@@ -18,9 +18,33 @@ const navItems = [
   { label: "Поддержка", href: "/support" },
 ];
 
-export function Header({ isLoggedIn = false }: HeaderProps) {
+export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInProp ?? false);
+
+  // Check authentication status on mount and when storage changes
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('access_token');
+      setIsLoggedIn(!!token);
+    };
+
+    checkAuth();
+
+    // Listen for storage changes (logout in another tab)
+    window.addEventListener('storage', checkAuth);
+    return () => window.removeEventListener('storage', checkAuth);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setMobileMenuOpen(false);
+    router.push('/');
+  };
 
   return (
     <header className="w-full py-4 px-4 md:px-6 sticky top-0 z-50 bg-black/50 backdrop-blur-xl border-b border-white/5">
@@ -82,6 +106,13 @@ export function Header({ isLoggedIn = false }: HeaderProps) {
               <Link href="/profile" className="p-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 hover:from-primary/30 hover:to-accent/30 transition-colors">
                 <User className="h-5 w-5 text-white" />
               </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors text-sm"
+              >
+                <LogOut className="h-4 w-4" />
+                Выход
+              </button>
             </>
           ) : (
             <>
@@ -129,23 +160,32 @@ export function Header({ isLoggedIn = false }: HeaderProps) {
           
           {/* Mobile Auth Buttons */}
           {isLoggedIn ? (
-            <div className="flex gap-3 mt-6 pt-6 border-t border-white/10">
-              <Link
-                href="/notifications"
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/5 text-white hover:bg-white/10 transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
+            <div className="flex flex-col gap-3 mt-6 pt-6 border-t border-white/10">
+              <div className="flex gap-3">
+                <Link
+                  href="/notifications"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/5 text-white hover:bg-white/10 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Bell className="h-5 w-5" />
+                  Уведомления
+                </Link>
+                <Link
+                  href="/profile"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/5 text-white hover:bg-white/10 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <User className="h-5 w-5" />
+                  Профиль
+                </Link>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
               >
-                <Bell className="h-5 w-5" />
-                Уведомления
-              </Link>
-              <Link
-                href="/profile"
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/5 text-white hover:bg-white/10 transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <User className="h-5 w-5" />
-                Профиль
-              </Link>
+                <LogOut className="h-5 w-5" />
+                Выход
+              </button>
             </div>
           ) : (
             <div className="flex flex-col gap-3 mt-6 pt-6 border-t border-white/10">
