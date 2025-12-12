@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
+import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -119,6 +120,7 @@ export default function SupportPage() {
         </div>
       </main>
 
+      <Footer />
       <ChatBot />
     </div>
   );

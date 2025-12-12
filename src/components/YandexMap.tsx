@@ -125,7 +125,8 @@ export function YandexMap({
         },
         {
           preset: getPresetByStatus(marker.status),
-          iconColor: getColorByStatus(marker.status)
+          iconColor: getColorByStatus(marker.status),
+          draggable: false
         }
       );
 
@@ -136,14 +137,21 @@ export function YandexMap({
       // Highlight selected marker
       if (marker.id === selectedMarkerId) {
         placemark.options.set('iconColor', '#00BCD4');
+        placemark.options.set('preset', 'islands#redDotIcon');
       }
 
       mapInstanceRef.current.geoObjects.add(placemark);
       markersRef.current.push(placemark);
     });
 
-    // Auto-fit bounds if markers exist
-    if (markers.length > 0) {
+    // Center on single marker (for selection mode)
+    if (markers.length === 1) {
+      mapInstanceRef.current.setCenter([markers[0].lat, markers[0].lng], 16, {
+        duration: 300
+      });
+    }
+    // Auto-fit bounds if multiple markers exist
+    else if (markers.length > 1) {
       const bounds = mapInstanceRef.current.geoObjects.getBounds();
       if (bounds) {
         mapInstanceRef.current.setBounds(bounds, {
@@ -156,7 +164,9 @@ export function YandexMap({
 
   function getPresetByStatus(status?: string) {
     switch (status) {
+      case 'selected': return 'islands#redDotIcon';
       case 'pending': return 'islands#yellowCircleDotIcon';
+      case 'assigned': return 'islands#orangeCircleDotIcon';
       case 'in_progress': return 'islands#blueCircleDotIcon';
       case 'completed': return 'islands#greenCircleDotIcon';
       default: return 'islands#blueDotIcon';
@@ -165,7 +175,9 @@ export function YandexMap({
 
   function getColorByStatus(status?: string) {
     switch (status) {
+      case 'selected': return '#FF0000';
       case 'pending': return '#FBC02D';
+      case 'assigned': return '#FF9800';
       case 'in_progress': return '#00BCD4';
       case 'completed': return '#4CAF50';
       default: return '#00BCD4';

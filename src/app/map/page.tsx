@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
+import { Footer } from "@/components/Footer";
 import { YandexMap } from "@/components/YandexMap";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -262,6 +263,7 @@ export default function MapPage() {
         </div>
       </main>
 
+      <Footer />
       <ChatBot />
     </div>
   );

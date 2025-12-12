@@ -2,11 +2,12 @@
 
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
+import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { 
   Zap, Droplet, Construction, Trash2, Sparkles, TreeDeciduous,
-  Camera, FileText, CheckCircle, MapPin, Clock, Users, ArrowRight
+  Camera, FileText, CheckCircle, MapPin, ArrowRight
 } from "lucide-react";
 
 const categories = [
@@ -16,13 +17,6 @@ const categories = [
   { id: "garbage", label: "Мусор", icon: Trash2, color: "from-green-500 to-emerald-600" },
   { id: "cleaning", label: "Уборка", icon: Sparkles, color: "from-purple-500 to-pink-500" },
   { id: "landscaping", label: "Благоустройство", icon: TreeDeciduous, color: "from-emerald-500 to-teal-500" },
-];
-
-const stats = [
-  { value: "15K+", label: "Решенных проблем", icon: CheckCircle },
-  { value: "45", label: "Специалистов", icon: Users },
-  { value: "< 24ч", label: "Среднее время", icon: Clock },
-  { value: "98%", label: "Довольных граждан", icon: MapPin },
 ];
 
 export default function Home() {
@@ -47,16 +41,16 @@ export default function Home() {
             </h1>
           </div>
 
-          {/* Bento Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[260px] md:auto-rows-[220px]">
+          {/* Bento Grid - Simplified */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Main CTA - Large */}
-            <div className="bento-item md:col-span-2 lg:col-span-2 lg:row-span-2 flex flex-col justify-center p-6 md:p-8 group">
+            <div className="bento-item md:col-span-2 lg:col-span-2 flex flex-col justify-center p-6 md:p-8 group min-h-[280px]">
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs md:text-sm">
                   <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
                   <span>AI-задачи</span>
                 </div>
-                <h2 className="text-lg md:text-2xl lg:text-3xl font-bold text-white leading-snug">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white leading-snug">
                   Фотографируйте, описывайте и&nbsp;отправляйте
                 </h2>
                 <p className="text-gray-400 text-sm md:text-base">
@@ -76,82 +70,52 @@ export default function Home() {
             </div>
 
             {/* How it works - Steps */}
-            <div className="bento-item lg:row-span-2 flex flex-col p-6 md:p-7">
+            <div className="bento-item flex flex-col p-6 md:p-7 min-h-[280px]">
               <h3 className="text-base md:text-lg font-semibold text-white mb-6">Как это работает?</h3>
-              <div className="space-y-6 flex-1 flex flex-col justify-center">
+              <div className="space-y-5 flex-1 flex flex-col justify-center">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
-                    <Camera className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                    <Camera className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium text-sm md:text-base leading-tight">1. Сделайте фото</p>
-                    <p className="text-gray-500 text-xs md:text-sm leading-tight">проблемы</p>
+                    <p className="text-white font-medium text-sm leading-tight">1. Сделайте фото</p>
+                    <p className="text-gray-500 text-xs leading-tight">проблемы</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5 md:w-6 md:h-6 text-accent" />
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5 text-accent" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium text-sm md:text-base leading-tight">2. Добавьте описание</p>
-                    <p className="text-gray-500 text-xs md:text-sm leading-tight">и адрес</p>
+                    <p className="text-white font-medium text-sm leading-tight">2. Добавьте описание</p>
+                    <p className="text-gray-500 text-xs leading-tight">и адрес</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center shrink-0">
-                    <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-500" />
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center shrink-0">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium text-sm md:text-base leading-tight">3. Мы поможем вам!</p>
-                    <p className="text-gray-500 text-xs md:text-sm leading-tight">AI назначит задачу</p>
+                    <p className="text-white font-medium text-sm leading-tight">3. Мы поможем вам!</p>
+                    <p className="text-gray-500 text-xs leading-tight">AI назначит задачу</p>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Stats Cards - Hidden on mobile */}
-            {stats.slice(0, 2).map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="bento-item hidden lg:flex flex-col justify-center items-center text-center p-6 group">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-transparent flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                    <Icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
-                  <p className="text-gray-500 text-sm">{stat.label}</p>
-                </div>
-              );
-            })}
 
             {/* Map Preview */}
-            <div className="bento-item lg:col-span-2 flex items-center justify-between p-4 md:p-6 group cursor-pointer">
-              <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
-                <div className="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-transparent flex items-center justify-center shrink-0">
-                  <MapPin className="w-5 h-5 md:w-7 md:h-7 text-accent" />
+            <div className="bento-item md:col-span-2 lg:col-span-3 flex items-center justify-between p-4 md:p-6 group cursor-pointer hover:border-accent/30">
+              <Link href="/map" className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-transparent flex items-center justify-center shrink-0">
+                  <MapPin className="w-6 h-6 md:w-7 md:h-7 text-accent" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white font-semibold text-sm md:text-lg truncate">Карта проблем</p>
-                  <p className="text-gray-500 text-xs md:text-sm hidden sm:block">Смотрите активные заявки по городу</p>
+                  <p className="text-white font-semibold text-base md:text-lg">Карта проблем</p>
+                  <p className="text-gray-500 text-sm">Смотрите активные заявки по городу в реальном времени</p>
                 </div>
-              </div>
-              <Link href="/map" className="shrink-0">
-                <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-gray-500 group-hover:text-accent group-hover:translate-x-2 transition-all" />
+                <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-gray-500 group-hover:text-accent group-hover:translate-x-2 transition-all shrink-0" />
               </Link>
             </div>
-
-            {/* More Stats - Hidden on mobile */}
-            {stats.slice(2).map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="bento-item hidden lg:flex flex-col justify-center items-center text-center p-6 group">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent/20 to-transparent flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                    <Icon className="w-6 h-6 text-accent" />
-                  </div>
-                  <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
-                  <p className="text-gray-500 text-sm">{stat.label}</p>
-                </div>
-              );
-            })}
           </div>
         </section>
 
@@ -230,21 +194,7 @@ export default function Home() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="py-12 text-center border-t border-white/5">
-        <p 
-          className="text-4xl md:text-5xl lg:text-6xl font-bold"
-          style={{
-            background: 'linear-gradient(90deg, #FFD700 0%, #FFEC2D 20%, #10B981 50%, #00BCD4 80%, #0088FF 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-        >
-          Made in Kazakhstan
-        </p>
-      </footer>
-
+      <Footer />
       <ChatBot />
     </div>
   );

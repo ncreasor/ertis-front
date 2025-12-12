@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
+import { Footer } from "@/components/Footer";
 import { Clock, CheckCircle, AlertCircle, XCircle, Image as ImageIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { mockRequests, mockDelay } from "@/lib/mockData";
@@ -187,6 +188,7 @@ export default function HistoryPage() {
         </div>
       </main>
 
+      <Footer />
       <ChatBot />
     </div>
   );

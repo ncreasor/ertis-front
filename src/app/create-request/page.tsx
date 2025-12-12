@@ -2,6 +2,7 @@
 
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
+import { Footer } from "@/components/Footer";
 import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 import { YandexMap } from "@/components/YandexMap";
 import { useState } from "react";
@@ -437,12 +438,13 @@ export default function CreateRequestPage() {
                           lat: coords.lat,
                           lng: coords.lng,
                           title: address || 'Выбранное место',
-                          status: 'pending'
+                          status: 'selected'
                         }] : []}
                         center={coords ? [coords.lat, coords.lng] : [52.2873, 76.9653]}
                         zoom={coords ? 16 : 12}
                         onMapClick={handleMapClick}
                         height="400px"
+                        selectedMarkerId="selected"
                       />
                       <p className="text-xs text-gray-500 mt-2">
                         💡 Кликните на карту для выбора места
@@ -534,6 +536,7 @@ export default function CreateRequestPage() {
         </div>
       </main>
 
+      <Footer />
       <ChatBot />
     </div>
   );
