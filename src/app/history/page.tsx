@@ -45,7 +45,8 @@ export default function HistoryPage() {
           return;
         }
 
-        const response = await fetch('/api/requests/my', {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ertis-servise-ertis-service.up.railway.app/api/v1';
+        const response = await fetch(`${apiUrl}/requests/my`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -142,15 +143,17 @@ export default function HistoryPage() {
                       </div>
                     )}
 
-                    {(request.ai_category || request.ai_description) && (
+                    {request.ai_recommendation && (
                       <div className="my-3 p-3 bg-primary/5 border border-primary/20 rounded-lg">
-                        <p className="text-xs text-gray-400 mb-1">🤖 Анализ ИИ:</p>
-                        {request.ai_category && (
-                          <p className="text-sm text-gray-300">Категория: {request.ai_category}</p>
-                        )}
-                        {request.ai_description && (
-                          <p className="text-sm text-gray-300">{request.ai_description}</p>
-                        )}
+                        <p className="text-xs text-primary mb-1">🤖 Рекомендация ИИ:</p>
+                        <p className="text-sm text-gray-300">{request.ai_recommendation}</p>
+                      </div>
+                    )}
+                    
+                    {request.ai_category && !request.ai_recommendation && (
+                      <div className="my-3 p-3 bg-white/5 border border-white/10 rounded-lg">
+                        <p className="text-xs text-gray-400 mb-1">📋 Категория:</p>
+                        <p className="text-sm text-gray-300">{request.ai_category}</p>
                       </div>
                     )}
 

@@ -79,7 +79,7 @@ export function AddressAutocomplete({
       setIsLoading(true);
       try {
         const results = await window.ymaps.suggest(value, {
-          results: 5,
+          results: 3,
           boundedBy: [[51.8, 76.5], [52.8, 77.5]] // Bounds for Pavlodar region
         });
 
