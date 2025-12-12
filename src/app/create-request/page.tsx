@@ -3,6 +3,7 @@
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
 import { AddressAutocomplete } from "@/components/AddressAutocomplete";
+import { YandexMap } from "@/components/YandexMap";
 import { useState } from "react";
 import { Camera, ChevronRight, Send, ArrowLeft, MapPin, Loader2 } from "lucide-react";
 import { Zap, Droplet, Construction, Trash2, Sparkles, TreeDeciduous } from "lucide-react";
@@ -27,7 +28,7 @@ const categories: Record<string, { name: string; icon: typeof Zap; color: string
     ],
   },
   water: {
-    name: "Водопровод",
+    name: "Водоснабжение",
     icon: Droplet,
     color: "from-blue-500 to-cyan-500",
     problems: [
@@ -39,7 +40,7 @@ const categories: Record<string, { name: string; icon: typeof Zap; color: string
     ],
   },
   roads: {
-    name: "Дороги",
+    name: "Дорожное покрытие",
     icon: Construction,
     color: "from-gray-500 to-slate-600",
     problems: [
@@ -50,7 +51,7 @@ const categories: Record<string, { name: string; icon: typeof Zap; color: string
     ],
   },
   garbage: {
-    name: "Мусор",
+    name: "Вывоз мусора",
     icon: Trash2,
     color: "from-green-500 to-emerald-600",
     problems: [
@@ -61,7 +62,7 @@ const categories: Record<string, { name: string; icon: typeof Zap; color: string
     ],
   },
   cleaning: {
-    name: "Уборка",
+    name: "Уборка территории",
     icon: Sparkles,
     color: "from-purple-500 to-pink-500",
     problems: [
@@ -96,6 +97,7 @@ export default function CreateRequestPage() {
   const [error, setError] = useState("");
   const [isLocating, setIsLocating] = useState(false);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [showMap, setShowMap] = useState(false);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -109,6 +111,23 @@ export default function CreateRequestPage() {
     }
   };
 
+  const handleMapClick = async (clickedCoords: [number, number]) => {
+    setCoords({ lat: clickedCoords[0], lng: clickedCoords[1] });
+
+    // Reverse geocode to get address
+    if (window.ymaps) {
+      try {
+        const res = await window.ymaps.geocode(clickedCoords);
+        const firstGeoObject = res.geoObjects.get(0);
+        if (firstGeoObject) {
+          setAddress(firstGeoObject.getAddressLine());
+        }
+      } catch (err) {
+        console.error('Reverse geocode error:', err);
+      }
+    }
+  };
+
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
       setError("Геолокация не поддерживается вашим браузером");
@@ -116,6 +135,8 @@ export default function CreateRequestPage() {
     }
 
     setIsLocating(true);
+    setError(""); // Clear previous errors
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setCoords({
@@ -123,10 +144,43 @@ export default function CreateRequestPage() {
           lng: position.coords.longitude,
         });
         setIsLocating(false);
+
+        // Optionally reverse geocode to get address
+        if (window.ymaps) {
+          window.ymaps.geocode([position.coords.latitude, position.coords.longitude])
+            .then((res: any) => {
+              const firstGeoObject = res.geoObjects.get(0);
+              if (firstGeoObject) {
+                setAddress(firstGeoObject.getAddressLine());
+              }
+            })
+            .catch((err: any) => console.error('Reverse geocode error:', err));
+        }
       },
-      () => {
-        setError("Не удалось получить местоположение");
+      (error) => {
         setIsLocating(false);
+        let errorMessage = "Не удалось получить местоположение. ";
+
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage += "Вы запретили доступ к геолокации.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage += "Информация о местоположении недоступна.";
+            break;
+          case error.TIMEOUT:
+            errorMessage += "Превышено время ожидания.";
+            break;
+          default:
+            errorMessage += "Попробуйте ввести адрес вручную.";
+        }
+
+        setError(errorMessage);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
       }
     );
   };
@@ -146,14 +200,17 @@ export default function CreateRequestPage() {
 
       // REAL API MODE - Connected to backend
       const requestFormData = new FormData();
-      
-      // Title based on category and problem type
+
+      // Get category and problem type
       const categoryName = categories[selectedCategory]?.name || selectedCategory;
       const problemLabel = categories[selectedCategory]?.problems.find(p => p.id === selectedProblem)?.label || selectedProblem;
-      requestFormData.append('title', `${categoryName}: ${problemLabel}`);
+
+      // Backend expects these exact field names
+      requestFormData.append('category', categoryName);
+      requestFormData.append('problem_type', problemLabel);
       requestFormData.append('description', description);
       requestFormData.append('address', address);
-      
+
       if (coords) {
         requestFormData.append('latitude', coords.lat.toString());
         requestFormData.append('longitude', coords.lng.toString());
@@ -162,7 +219,8 @@ export default function CreateRequestPage() {
         requestFormData.append('photo', photo);
       }
 
-      const response = await fetch('/api/requests', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+      const response = await fetch(`${apiUrl}/requests`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -306,37 +364,102 @@ export default function CreateRequestPage() {
             {step === 3 && (
               <div className="space-y-6 animate-slide-in">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">Адрес</label>
-                  <AddressAutocomplete
-                    value={address}
-                    onChange={setAddress}
-                    onCoordinatesChange={(lat, lng) => setCoords({ lat, lng })}
-                    placeholder="Начните вводить адрес..."
-                    className="input-unified"
-                  />
-                  {coords && (
-                    <p className="text-xs text-gray-500 mt-2">
-                      📍 Координаты: {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
-                    </p>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="block text-sm text-gray-400">Адрес и местоположение</label>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowMap(false)}
+                        className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${
+                          !showMap
+                            ? 'bg-primary text-white'
+                            : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                        }`}
+                      >
+                        Ввод адреса
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowMap(true)}
+                        className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${
+                          showMap
+                            ? 'bg-primary text-white'
+                            : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                        }`}
+                      >
+                        Карта
+                      </button>
+                    </div>
+                  </div>
+
+                  {!showMap ? (
+                    <>
+                      <AddressAutocomplete
+                        value={address}
+                        onChange={setAddress}
+                        onCoordinatesChange={(lat, lng) => setCoords({ lat, lng })}
+                        placeholder="Начните вводить адрес..."
+                        className="input-unified"
+                      />
+                      <div className="flex gap-3 mt-2">
+                        <button
+                          type="button"
+                          onClick={handleGetLocation}
+                          disabled={isLocating}
+                          className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-2"
+                        >
+                          {isLocating ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Определяем...
+                            </>
+                          ) : (
+                            <>
+                              <MapPin className="w-4 h-4" />
+                              Мое местоположение
+                            </>
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowMap(true)}
+                          className="text-sm text-gray-500 hover:text-primary transition-colors"
+                        >
+                          или выбрать на карте
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div>
+                      <YandexMap
+                        markers={coords ? [{
+                          id: 'selected',
+                          lat: coords.lat,
+                          lng: coords.lng,
+                          title: address || 'Выбранное место',
+                          status: 'pending'
+                        }] : []}
+                        center={coords ? [coords.lat, coords.lng] : [52.2873, 76.9653]}
+                        zoom={coords ? 16 : 12}
+                        onMapClick={handleMapClick}
+                        height="400px"
+                      />
+                      <p className="text-xs text-gray-500 mt-2">
+                        💡 Кликните на карту для выбора места
+                      </p>
+                    </div>
                   )}
-                  <button
-                    type="button"
-                    onClick={handleGetLocation}
-                    disabled={isLocating}
-                    className="text-sm text-primary hover:text-primary/80 transition-colors mt-2 flex items-center gap-2"
-                  >
-                    {isLocating ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Определяем местоположение...
-                      </>
-                    ) : (
-                      <>
-                        <MapPin className="w-4 h-4" />
-                        Или определить мое местоположение
-                      </>
-                    )}
-                  </button>
+
+                  {address && (
+                    <div className="mt-3 p-3 bg-white/5 rounded-lg border border-white/10">
+                      <p className="text-sm text-white mb-1">{address}</p>
+                      {coords && (
+                        <p className="text-xs text-gray-500">
+                          📍 {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div>
