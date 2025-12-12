@@ -12,11 +12,24 @@ interface LanguageSwitcherProps {
 export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
   const [language, setLanguage] = useState<Language>('ru');
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const saved = localStorage.getItem('language') as Language;
     if (saved) setLanguage(saved);
   }, []);
+
+  if (!mounted) {
+    return (
+      <div className={`${className}`}>
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5">
+          <div className="w-5 h-3.5 bg-gray-600 rounded-sm animate-pulse" />
+          <span className="text-white text-sm font-medium">RU</span>
+        </div>
+      </div>
+    );
+  }
 
   const handleChange = (lang: Language) => {
     setLanguage(lang);

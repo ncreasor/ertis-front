@@ -23,11 +23,13 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInProp ?? false);
-  const [user, setUser] = useState<{ first_name?: string; last_name?: string; username?: string } | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<{ first_name?: string; last_name?: string; username?: string; role?: string } | null>(null);
+  const [mounted, setMounted] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     const checkAuth = () => {
       const token = localStorage.getItem('access_token');
       const userStr = localStorage.getItem('user');
@@ -38,6 +40,8 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
         } catch {
           setUser(null);
         }
+      } else {
+        setUser(null);
       }
     };
 
@@ -127,7 +131,9 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
 
             {/* Auth Section - Desktop */}
             <div className="hidden md:flex items-center gap-3">
-              {isLoggedIn ? (
+              {!mounted ? (
+                <div className="w-20 h-9 bg-white/5 rounded-lg animate-pulse" />
+              ) : isLoggedIn ? (
                 <>
                   {/* Notifications */}
                   <Link 
