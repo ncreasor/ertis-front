@@ -2,14 +2,16 @@
 
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
+import { Footer } from "@/components/Footer";
 import Link from "next/link";
 import { useState, useEffect, Suspense } from "react";
 import { LogIn, ArrowRight } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import api from "@/lib/api";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-// Separate component for search params logic
 function LoginForm() {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -22,9 +24,9 @@ function LoginForm() {
 
   useEffect(() => {
     if (searchParams.get('registered') === 'true') {
-      setSuccess("Регистрация успешна! Теперь вы можете войти.");
+      setSuccess(t.auth.registrationSuccess);
     }
-  }, [searchParams]);
+  }, [searchParams, t.auth.registrationSuccess]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,126 +40,115 @@ function LoginForm() {
     setSuccess("");
 
     try {
-      // Use API client to login
       const data = await api.login({
         username: formData.username,
         password: formData.password,
       });
 
-      // Store token and user data (already done in api.login, but set user)
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      // Redirect based on role
       if (data.user.role === 'employee') {
-        window.location.href = '/worker/map';
+        window.location.href = '/worker';
       } else if (data.user.role === 'admin') {
         window.location.href = '/admin';
       } else {
-        // Redirect citizens to dashboard
         window.location.href = '/dashboard';
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Неверный username или пароль');
+      setError(err instanceof Error ? err.message : t.common.error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <main className="flex-1 flex items-center justify-center px-4 md:px-6 py-12">
-        <div className="card-unified w-full max-w-md">
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-2">
-            <LogIn className="w-7 h-7 text-primary" />
-            <h1 className="text-2xl md:text-3xl font-bold text-primary">
-              Вход
-            </h1>
-          </div>
-          <p className="text-gray-400 mb-8">Войдите в свой аккаунт</p>
-
-          {/* Success Message */}
-          {success && (
-            <div className="bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded-xl mb-4 text-sm">
-              {success}
-            </div>
-          )}
-
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl mb-4 text-sm">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Логин (username)</label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="input-unified"
-                placeholder="Введите логин"
-                required
-                disabled={isLoading}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-400 mb-2">Пароль</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="input-unified"
-                placeholder="••••••••"
-                required
-                disabled={isLoading}
-              />
-            </div>
-
-            <div className="text-right">
-              <Link
-                href="/forgot-password"
-                className="text-sm text-gray-500 hover:text-primary transition-colors"
-              >
-                Забыли пароль?
-              </Link>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="btn-unified btn-unified-primary flex items-center justify-center gap-2 mt-6 disabled:opacity-50"
-            >
-              {isLoading ? (
-                <span className="animate-spin">⏳</span>
-              ) : (
-                <>
-                  Войти
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Footer */}
-          <p className="text-center text-sm text-gray-500 mt-8">
-            Нет аккаунта?{" "}
-            <Link href="/register" className="text-white font-medium hover:text-primary transition-colors">
-              Зарегистрироваться
-            </Link>
-          </p>
+    <main className="flex-1 flex items-center justify-center px-4 md:px-6 py-12">
+      <div className="card-unified w-full max-w-md">
+        <div className="flex items-center gap-3 mb-2">
+          <LogIn className="w-7 h-7 text-primary" />
+          <h1 className="text-2xl md:text-3xl font-bold text-primary">
+            {t.auth.loginTitle}
+          </h1>
         </div>
-      </main>
-    </>
+        <p className="text-gray-400 mb-8">{t.auth.loginSubtitle}</p>
+
+        {success && (
+          <div className="bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded-xl mb-4 text-sm">
+            {success}
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl mb-4 text-sm">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">{t.auth.username}</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="input-unified"
+              placeholder={t.auth.usernamePlaceholder}
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">{t.auth.password}</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="input-unified"
+              placeholder="••••••••"
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="text-right">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-gray-500 hover:text-primary transition-colors"
+            >
+              {t.auth.forgotPassword}
+            </Link>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="btn-unified btn-unified-primary flex items-center justify-center gap-2 mt-6 disabled:opacity-50"
+          >
+            {isLoading ? (
+              <span className="animate-spin">⏳</span>
+            ) : (
+              <>
+                {t.auth.loginButton}
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-500 mt-8">
+          {t.auth.noAccount}{" "}
+          <Link href="/register" className="text-white font-medium hover:text-primary transition-colors">
+            {t.auth.registerButton}
+          </Link>
+        </p>
+      </div>
+    </main>
   );
 }
 
-// Main component with Suspense boundary
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -171,6 +162,7 @@ export default function LoginPage() {
         <LoginForm />
       </Suspense>
 
+      <Footer />
       <ChatBot />
     </div>
   );

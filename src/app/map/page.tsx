@@ -6,8 +6,9 @@ import { Footer } from "@/components/Footer";
 import { YandexMap } from "@/components/YandexMap";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Zap, Droplet, Construction, Trash2, Sparkles, TreeDeciduous, Loader2 } from "lucide-react";
+import { MapPin, Zap, Droplet, Construction, Trash2, Sparkles, TreeDeciduous, Loader2, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Problem {
   id: string;
@@ -23,13 +24,20 @@ interface Problem {
 const categoryIcons: Record<string, typeof Zap> = {
   "Электричество": Zap,
   "Водоснабжение": Droplet,
+  "Водопровод": Droplet,
   "Дорожное покрытие": Construction,
+  "Дороги": Construction,
   "Вывоз мусора": Trash2,
+  "Мусор": Trash2,
   "Уборка территории": Sparkles,
+  "Уборка": Sparkles,
   "Благоустройство": TreeDeciduous,
 };
 
+const API_BASE = 'https://ertis-servise-ertis-service.up.railway.app';
+
 export default function MapPage() {
+  const { t } = useLanguage();
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
   const [problems, setProblems] = useState<Problem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,26 +51,29 @@ export default function MapPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ertis-servise-ertis-service.up.railway.app/api/v1';
-      const response = await fetch(`${apiUrl}/requests/map`);
+      const response = await fetch(`${API_BASE}/api/v1/requests/map`);
       
       if (!response.ok) {
         throw new Error('Не удалось загрузить заявки');
       }
       
       const data = await response.json();
+      console.log('Map data received:', data);
       
-      const mappedProblems: Problem[] = data.map((item: any) => ({
-        id: item.id.toString(),
-        lat: item.latitude,
-        lng: item.longitude,
-        category: item.ai_category || item.problem_type || 'Другое',
-        description: item.description,
-        status: item.status,
-        priority: item.priority,
-        address: item.address,
-      }));
+      const mappedProblems: Problem[] = data
+        .filter((item: any) => item.latitude && item.longitude)
+        .map((item: any) => ({
+          id: item.id.toString(),
+          lat: parseFloat(item.latitude),
+          lng: parseFloat(item.longitude),
+          category: item.ai_category || item.problem_type || 'Другое',
+          description: item.description,
+          status: item.status,
+          priority: item.priority || 'medium',
+          address: item.address || 'Адрес не указан',
+        }));
       
+      console.log('Mapped problems:', mappedProblems);
       setProblems(mappedProblems);
     } catch (err) {
       console.error('Error fetching problems:', err);
@@ -73,22 +84,11 @@ export default function MapPage() {
   };
 
   const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Ожидает';
-      case 'assigned': return 'Назначена';
-      case 'in_progress': return 'В работе';
-      case 'completed': return 'Завершена';
-      default: return status;
-    }
+    return t.status[status as keyof typeof t.status] || status;
   };
 
   const getPriorityLabel = (priority: string) => {
-    switch (priority) {
-      case 'low': return 'Низкий';
-      case 'medium': return 'Средний';
-      case 'high': return 'Высокий';
-      default: return priority;
-    }
+    return t.priority[priority as keyof typeof t.priority] || priority;
   };
 
   return (
@@ -97,9 +97,19 @@ export default function MapPage() {
 
       <main className="flex-1 px-4 md:px-6 py-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-8">
-            Карта проблем города
-          </h1>
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-white">
+              {t.map.title}
+            </h1>
+            <button
+              onClick={fetchProblems}
+              disabled={isLoading}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">{t.common.tryAgain}</span>
+            </button>
+          </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Yandex Map */}
@@ -118,6 +128,8 @@ export default function MapPage() {
                     }))}
                     selectedMarkerId={selectedProblem?.id}
                     height="100%"
+                    center={problems.length > 0 ? [problems[0].lat, problems[0].lng] : [52.2873, 76.9653]}
+                    zoom={problems.length > 0 ? 14 : 12}
                   />
                 </CardContent>
               </Card>
@@ -129,7 +141,7 @@ export default function MapPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold text-white">
-                      Активные проблемы
+                      {t.map.activeProblems}
                     </h2>
                     <Badge className="bg-primary">{problems.length}</Badge>
                   </div>
@@ -145,12 +157,12 @@ export default function MapPage() {
                         onClick={fetchProblems}
                         className="text-primary text-sm hover:underline"
                       >
-                        Попробовать снова
+                        {t.map.tryAgain}
                       </button>
                     </div>
                   ) : problems.length === 0 ? (
                     <p className="text-gray-400 text-center py-8">
-                      Нет активных заявок
+                      {t.map.noActiveRequests}
                     </p>
                   ) : (
                     <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
@@ -227,31 +239,31 @@ export default function MapPage() {
                 <Card className="glass-card border-primary/20">
                   <CardContent className="p-6">
                     <h3 className="text-lg font-bold text-primary mb-4">
-                      Детали заявки #{selectedProblem.id}
+                      {t.map.details} #{selectedProblem.id}
                     </h3>
                     <div className="space-y-2 text-sm">
                       <p className="text-white">
-                        <span className="text-text-secondary">Категория:</span>{" "}
+                        <span className="text-text-secondary">{t.map.category}:</span>{" "}
                         {selectedProblem.category}
                       </p>
                       <p className="text-white">
-                        <span className="text-text-secondary">Описание:</span>{" "}
+                        <span className="text-text-secondary">{t.map.description}:</span>{" "}
                         {selectedProblem.description}
                       </p>
                       <p className="text-white">
-                        <span className="text-text-secondary">Адрес:</span>{" "}
+                        <span className="text-text-secondary">{t.map.address}:</span>{" "}
                         {selectedProblem.address}
                       </p>
                       <p className="text-white">
-                        <span className="text-text-secondary">Статус:</span>{" "}
+                        <span className="text-text-secondary">{t.map.status}:</span>{" "}
                         {getStatusLabel(selectedProblem.status)}
                       </p>
                       <p className="text-white">
-                        <span className="text-text-secondary">Приоритет:</span>{" "}
+                        <span className="text-text-secondary">{t.map.priority}:</span>{" "}
                         {getPriorityLabel(selectedProblem.priority)}
                       </p>
                       <p className="text-white">
-                        <span className="text-text-secondary">Координаты:</span>{" "}
+                        <span className="text-text-secondary">{t.map.coordinates}:</span>{" "}
                         {selectedProblem.lat.toFixed(4)}, {selectedProblem.lng.toFixed(4)}
                       </p>
                     </div>
@@ -268,4 +280,3 @@ export default function MapPage() {
     </div>
   );
 }
-

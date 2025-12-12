@@ -4,29 +4,48 @@ import Link from "next/link";
 import { Logo, LogoText } from "./Logo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, Bell, User, LogOut, Settings, History, ChevronDown } from "lucide-react";
+import { Menu, X, Bell, User, LogOut, Settings, History, ChevronDown, LayoutDashboard, Shield, Wrench } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface HeaderProps {
   isLoggedIn?: boolean;
 }
 
-const navItems = [
-  { label: "Главная", href: "/" },
-  { label: "Карта", href: "/map" },
-  { label: "История", href: "/history" },
-  { label: "Поддержка", href: "/support" },
-];
-
 export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{ first_name?: string; last_name?: string; username?: string; role?: string } | null>(null);
   const [mounted, setMounted] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
+
+  const getNavItems = () => {
+    const items = [
+      { label: t.nav.home, href: "/" },
+      { label: t.nav.map, href: "/map" },
+      { label: t.nav.history, href: "/history" },
+      { label: t.nav.support, href: "/support" },
+    ];
+    
+    // Добавляем ссылку на панель в зависимости от роли
+    if (isLoggedIn && user?.role) {
+      if (user.role === 'admin') {
+        items.splice(1, 0, { label: t.admin?.title?.split(' ')[0] || 'Админ', href: "/admin" });
+      } else if (user.role === 'employee') {
+        items.splice(1, 0, { label: t.worker?.title?.split(' ')[0] || 'Панель', href: "/worker" });
+      } else {
+        items.splice(1, 0, { label: t.nav.dashboard || 'Кабинет', href: "/dashboard" });
+      }
+    }
+    
+    return items;
+  };
+
+  const navItems = getNavItems();
 
   useEffect(() => {
     setMounted(true);
@@ -168,13 +187,44 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
 
                         {/* Menu Items */}
                         <div className="py-1">
+                          {/* Dashboard link based on role */}
+                          {user?.role === 'admin' && (
+                            <Link
+                              href="/admin"
+                              onClick={() => setAccountMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 text-primary hover:bg-primary/10 transition-colors"
+                            >
+                              <Shield className="w-4 h-4" />
+                              <span className="text-sm">{t.admin?.title || 'Админ панель'}</span>
+                            </Link>
+                          )}
+                          {user?.role === 'employee' && (
+                            <Link
+                              href="/worker"
+                              onClick={() => setAccountMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 text-accent hover:bg-accent/10 transition-colors"
+                            >
+                              <Wrench className="w-4 h-4" />
+                              <span className="text-sm">{t.worker?.title || 'Панель работника'}</span>
+                            </Link>
+                          )}
+                          {user?.role === 'citizen' && (
+                            <Link
+                              href="/dashboard"
+                              onClick={() => setAccountMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 text-primary hover:bg-primary/10 transition-colors"
+                            >
+                              <LayoutDashboard className="w-4 h-4" />
+                              <span className="text-sm">{t.nav.dashboard || 'Личный кабинет'}</span>
+                            </Link>
+                          )}
                           <Link
                             href="/profile"
                             onClick={() => setAccountMenuOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-white/5 transition-colors"
                           >
                             <User className="w-4 h-4" />
-                            <span className="text-sm">Профиль</span>
+                            <span className="text-sm">{t.nav.profile}</span>
                           </Link>
                           <Link
                             href="/history"
@@ -182,7 +232,7 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
                             className="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-white/5 transition-colors"
                           >
                             <History className="w-4 h-4" />
-                            <span className="text-sm">Мои заявки</span>
+                            <span className="text-sm">{t.nav.myRequests}</span>
                           </Link>
                           <Link
                             href="/notifications"
@@ -190,7 +240,7 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
                             className="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-white/5 transition-colors"
                           >
                             <Bell className="w-4 h-4" />
-                            <span className="text-sm">Уведомления</span>
+                            <span className="text-sm">{t.nav.notifications}</span>
                           </Link>
                         </div>
 
@@ -201,7 +251,7 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
                             className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-red-500/10 transition-colors"
                           >
                             <LogOut className="w-4 h-4" />
-                            <span className="text-sm">Выйти</span>
+                            <span className="text-sm">{t.nav.logout}</span>
                           </button>
                         </div>
                       </div>
@@ -211,10 +261,10 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
               ) : (
                 <>
                   <Link href="/login" className="btn-primary text-sm">
-                    Вход
+                    {t.nav.login}
                   </Link>
                   <Link href="/register" className="btn-accent text-sm">
-                    Регистрация
+                    {t.nav.register}
                   </Link>
                 </>
               )}
@@ -291,7 +341,7 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Bell className="h-5 w-5" />
-                    <span className="text-sm">Уведомления</span>
+                    <span className="text-sm">{t.nav.notifications}</span>
                   </Link>
                   <Link
                     href="/profile"
@@ -299,7 +349,7 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <User className="h-5 w-5" />
-                    <span className="text-sm">Профиль</span>
+                    <span className="text-sm">{t.nav.profile}</span>
                   </Link>
                 </div>
                 <button
@@ -307,7 +357,7 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
                   className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
                 >
                   <LogOut className="h-5 w-5" />
-                  Выход
+                  {t.nav.logout}
                 </button>
               </div>
             ) : (
@@ -317,14 +367,14 @@ export function Header({ isLoggedIn: isLoggedInProp }: HeaderProps) {
                   className="btn-primary text-center py-3"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Вход
+                  {t.nav.login}
                 </Link>
                 <Link
                   href="/register"
                   className="btn-accent text-center py-3"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Регистрация
+                  {t.nav.register}
                 </Link>
               </div>
             )}

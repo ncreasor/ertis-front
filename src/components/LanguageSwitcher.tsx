@@ -2,22 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-
-type Language = 'ru' | 'kz' | 'en';
+import { useLanguage, Language } from '@/contexts/LanguageContext';
 
 interface LanguageSwitcherProps {
   className?: string;
 }
 
 export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
-  const [language, setLanguage] = useState<Language>('ru');
+  const { language, setLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem('language') as Language;
-    if (saved && ['ru', 'kz', 'en'].includes(saved)) setLanguage(saved);
   }, []);
 
   if (!mounted) {
@@ -33,9 +30,7 @@ export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
 
   const handleChange = (lang: Language) => {
     setLanguage(lang);
-    localStorage.setItem('language', lang);
     setIsOpen(false);
-    window.location.reload();
   };
 
   const languages = {
@@ -106,4 +101,3 @@ export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
     </div>
   );
 }
-

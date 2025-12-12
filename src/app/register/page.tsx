@@ -2,12 +2,15 @@
 
 import { Header } from "@/components/Header";
 import { ChatBot } from "@/components/ChatBot";
+import { Footer } from "@/components/Footer";
 import Link from "next/link";
 import { useState } from "react";
 import { UserPlus, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import api from "@/lib/api";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function RegisterPage() {
+  const { t } = useLanguage();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -30,18 +33,17 @@ export default function RegisterPage() {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      setError("Пароли не совпадают");
+      setError(t.common.error);
       return;
     }
     
     if (formData.password.length < 6) {
-      setError("Пароль должен быть не менее 6 символов");
+      setError(t.common.error);
       return;
     }
 
-    // bcrypt limit - max 72 bytes
     if (new Blob([formData.password]).size > 72) {
-      setError("Пароль слишком длинный (максимум 72 символа)");
+      setError(t.common.error);
       return;
     }
     
@@ -59,7 +61,6 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      // Prepare request data
       const requestData = {
         email: formData.email,
         password: formData.password,
@@ -68,13 +69,10 @@ export default function RegisterPage() {
         last_name: formData.lastName,
       };
 
-      // Use API client to register
       await api.register(requestData);
-
-      // Redirect to login on success
       window.location.href = '/login?registered=true';
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка регистрации');
+      setError(err instanceof Error ? err.message : t.common.error);
     } finally {
       setIsLoading(false);
     }
@@ -89,47 +87,43 @@ export default function RegisterPage() {
 
       <main className="flex-1 flex items-center justify-center px-4 md:px-6 py-12">
         <div className="card-unified w-full max-w-md">
-          {/* Header */}
           <div className="flex items-center gap-3 mb-2">
             <UserPlus className="w-7 h-7 text-accent" />
             <h1 className="text-2xl md:text-3xl font-bold text-accent">
-              Регистрация
+              {t.auth.registerTitle}
             </h1>
           </div>
-          <p className="text-gray-400 mb-6">Создайте аккаунт гражданина</p>
+          <p className="text-gray-400 mb-6">{t.auth.registerSubtitle}</p>
 
-          {/* Step Indicator */}
           <div className="step-indicator">
             <div className={`step-dot ${step >= 1 ? 'step-dot-active' : 'step-dot-inactive'}`} />
             <div className="step-line" />
             <div className={`step-dot ${step >= 2 ? 'step-dot-active' : 'step-dot-inactive'}`} />
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl mb-4 text-sm">
               {error}
             </div>
           )}
 
-          {/* Step 1: Account Details */}
           {step === 1 && (
             <form onSubmit={handleNextStep} className="space-y-4 animate-in">
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Логин (username)</label>
+                <label className="block text-sm text-gray-400 mb-2">{t.auth.username}</label>
                 <input
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
                   className="input-unified"
-                  placeholder="Введите логин"
+                  placeholder={t.auth.usernamePlaceholder}
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Email</label>
+                <label className="block text-sm text-gray-400 mb-2">{t.auth.email}</label>
                 <input
                   type="email"
                   name="email"
@@ -142,21 +136,21 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Пароль</label>
+                <label className="block text-sm text-gray-400 mb-2">{t.auth.password}</label>
                 <input
                   type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   className="input-unified"
-                  placeholder="Минимум 6 символов"
+                  placeholder={t.auth.passwordPlaceholder}
                   required
                   minLength={6}
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Подтвердите пароль</label>
+                <label className="block text-sm text-gray-400 mb-2">{t.auth.confirmPassword}</label>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -173,37 +167,36 @@ export default function RegisterPage() {
                 disabled={!isStep1Valid}
                 className="btn-unified btn-unified-accent flex items-center justify-center gap-2 mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Далее
+                {t.auth.next}
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
           )}
 
-          {/* Step 2: Personal Details */}
           {step === 2 && (
             <form onSubmit={handleSubmit} className="space-y-4 animate-slide-in">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">Имя</label>
+                  <label className="block text-sm text-gray-400 mb-2">{t.auth.firstName}</label>
                   <input
                     type="text"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
                     className="input-unified"
-                    placeholder="Имя"
+                    placeholder={t.auth.firstName}
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">Фамилия</label>
+                  <label className="block text-sm text-gray-400 mb-2">{t.auth.lastName}</label>
                   <input
                     type="text"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
                     className="input-unified"
-                    placeholder="Фамилия"
+                    placeholder={t.auth.lastName}
                     required
                   />
                 </div>
@@ -217,7 +210,7 @@ export default function RegisterPage() {
                   disabled={isLoading}
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  Назад
+                  {t.auth.back}
                 </button>
                 <button
                   type="submit"
@@ -228,7 +221,7 @@ export default function RegisterPage() {
                     <span className="animate-spin">⏳</span>
                   ) : (
                     <>
-                      Зарегистрироваться
+                      {t.auth.registerButton}
                       <Check className="w-4 h-4" />
                     </>
                   )}
@@ -237,16 +230,16 @@ export default function RegisterPage() {
             </form>
           )}
 
-          {/* Footer */}
           <p className="text-center text-sm text-gray-500 mt-8">
-            Уже есть аккаунт?{" "}
+            {t.auth.haveAccount}{" "}
             <Link href="/login" className="text-white font-medium hover:text-primary transition-colors">
-              Войти
+              {t.auth.loginButton}
             </Link>
           </p>
         </div>
       </main>
 
+      <Footer />
       <ChatBot />
     </div>
   );

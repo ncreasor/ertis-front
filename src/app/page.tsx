@@ -9,17 +9,20 @@ import {
   Zap, Droplet, Construction, Trash2, Sparkles, TreeDeciduous,
   Camera, FileText, CheckCircle, MapPin, ArrowRight
 } from "lucide-react";
-
-const categories = [
-  { id: "electricity", label: "Электричество", icon: Zap, color: "from-yellow-500 to-orange-500" },
-  { id: "water", label: "Водопровод", icon: Droplet, color: "from-blue-500 to-cyan-500" },
-  { id: "roads", label: "Дороги", icon: Construction, color: "from-gray-500 to-slate-600" },
-  { id: "garbage", label: "Мусор", icon: Trash2, color: "from-green-500 to-emerald-600" },
-  { id: "cleaning", label: "Уборка", icon: Sparkles, color: "from-purple-500 to-pink-500" },
-  { id: "landscaping", label: "Благоустройство", icon: TreeDeciduous, color: "from-emerald-500 to-teal-500" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Home() {
+  const { t } = useLanguage();
+
+  const categories = [
+    { id: "electricity", label: t.categories.electricity, icon: Zap, color: "from-yellow-500 to-orange-500" },
+    { id: "water", label: t.categories.water, icon: Droplet, color: "from-blue-500 to-cyan-500" },
+    { id: "roads", label: t.categories.roads, icon: Construction, color: "from-gray-500 to-slate-600" },
+    { id: "garbage", label: t.categories.garbage, icon: Trash2, color: "from-green-500 to-emerald-600" },
+    { id: "cleaning", label: t.categories.cleaning, icon: Sparkles, color: "from-purple-500 to-pink-500" },
+    { id: "landscaping", label: t.categories.landscaping, icon: TreeDeciduous, color: "from-emerald-500 to-teal-500" },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -31,12 +34,12 @@ export default function Home() {
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-primary via-cyan-400 to-primary bg-clip-text text-transparent">
-                Сообщайте о проблемах
+                {t.home.heroTitle1}
               </span>
               <br />
-              <span className="text-white">—Улучшайте </span>
+              <span className="text-white">{t.home.heroTitle2}</span>
               <span className="bg-gradient-to-r from-accent to-yellow-500 bg-clip-text text-transparent">
-                Павлодар
+                {t.home.heroCity}
               </span>
             </h1>
           </div>
@@ -48,13 +51,13 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs md:text-sm">
                   <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
-                  <span>AI-задачи</span>
+                  <span>{t.home.aiTasks}</span>
                 </div>
                 <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white leading-snug">
-                  Фотографируйте, описывайте и&nbsp;отправляйте
+                  {t.home.mainCta}
                 </h2>
                 <p className="text-gray-400 text-sm md:text-base">
-                  а наши службы всё исправят
+                  {t.home.mainCtaSub}
                 </p>
                 <Button
                   asChild
@@ -62,7 +65,7 @@ export default function Home() {
                   className="w-fit bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-black font-semibold px-5 md:px-8 py-2.5 md:py-5 rounded-xl group-hover:shadow-lg group-hover:shadow-primary/30 transition-all text-sm"
                 >
                   <Link href="/create-request" className="flex items-center gap-2">
-                    Подать заявку
+                    {t.home.submitRequest}
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
@@ -71,15 +74,15 @@ export default function Home() {
 
             {/* How it works - Steps */}
             <div className="bento-item flex flex-col p-6 md:p-7 min-h-[280px]">
-              <h3 className="text-base md:text-lg font-semibold text-white mb-6">Как это работает?</h3>
+              <h3 className="text-base md:text-lg font-semibold text-white mb-6">{t.home.howItWorks}</h3>
               <div className="space-y-5 flex-1 flex flex-col justify-center">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
                     <Camera className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium text-sm leading-tight">1. Сделайте фото</p>
-                    <p className="text-gray-500 text-xs leading-tight">проблемы</p>
+                    <p className="text-white font-medium text-sm leading-tight">1. {t.home.step1}</p>
+                    <p className="text-gray-500 text-xs leading-tight">{t.home.step1sub}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -87,8 +90,8 @@ export default function Home() {
                     <FileText className="w-5 h-5 text-accent" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium text-sm leading-tight">2. Добавьте описание</p>
-                    <p className="text-gray-500 text-xs leading-tight">и адрес</p>
+                    <p className="text-white font-medium text-sm leading-tight">2. {t.home.step2}</p>
+                    <p className="text-gray-500 text-xs leading-tight">{t.home.step2sub}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -96,8 +99,8 @@ export default function Home() {
                     <CheckCircle className="w-5 h-5 text-green-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium text-sm leading-tight">3. Мы поможем вам!</p>
-                    <p className="text-gray-500 text-xs leading-tight">AI назначит задачу</p>
+                    <p className="text-white font-medium text-sm leading-tight">3. {t.home.step3}</p>
+                    <p className="text-gray-500 text-xs leading-tight">{t.home.step3sub}</p>
                   </div>
                 </div>
               </div>
@@ -110,8 +113,8 @@ export default function Home() {
                   <MapPin className="w-6 h-6 md:w-7 md:h-7 text-accent" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white font-semibold text-base md:text-lg">Карта проблем</p>
-                  <p className="text-gray-500 text-sm">Смотрите активные заявки по городу в реальном времени</p>
+                  <p className="text-white font-semibold text-base md:text-lg">{t.home.mapPreview}</p>
+                  <p className="text-gray-500 text-sm">{t.home.mapPreviewSub}</p>
                 </div>
                 <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-gray-500 group-hover:text-accent group-hover:translate-x-2 transition-all shrink-0" />
               </Link>
@@ -123,10 +126,10 @@ export default function Home() {
         <section className="max-w-7xl mx-auto mb-16">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              С чем мы поможем?
+              {t.home.categoriesTitle}
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
-              Выберите категорию проблемы и сообщите о ней. Наш AI автоматически назначит подходящего специалиста.
+              {t.home.categoriesSub}
             </p>
           </div>
 
@@ -137,12 +140,10 @@ export default function Home() {
                 <button
                   key={cat.id}
                   onClick={() => {
-                    // Анимация при клике
                     const btn = document.getElementById(`cat-${cat.id}`);
                     btn?.classList.add('animate-pulse');
                     setTimeout(() => {
                       btn?.classList.remove('animate-pulse');
-                      // Redirect after animation
                       window.location.href = `/create-request?category=${cat.id}`;
                     }, 500);
                   }}
@@ -167,10 +168,10 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5" />
             <div className="relative z-10">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                Готовы сделать город лучше?
+                {t.home.ctaTitle}
               </h2>
               <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-                Присоединяйтесь к тысячам граждан, которые уже помогают улучшать Павлодар
+                {t.home.ctaSub}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
@@ -178,7 +179,7 @@ export default function Home() {
                   size="lg"
                   className="bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-black font-semibold px-8"
                 >
-                  <Link href="/create-request">Подать заявку</Link>
+                  <Link href="/create-request">{t.home.submitRequest}</Link>
                 </Button>
                 <Button
                   asChild
@@ -186,7 +187,7 @@ export default function Home() {
                   size="lg"
                   className="border-gray-700 hover:border-gray-600 hover:bg-white/5"
                 >
-                  <Link href="/map">Смотреть карту</Link>
+                  <Link href="/map">{t.home.viewMap}</Link>
                 </Button>
               </div>
             </div>

@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { Logo, LogoText } from "./Logo";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="border-t border-white/5 bg-black/30">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
@@ -16,32 +19,32 @@ export function Footer() {
               <LogoText />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Сервис для сообщения о городских проблемах. Вместе сделаем Павлодар лучше!
+              {t.footer.slogan}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Навигация</h4>
+            <h4 className="text-white font-semibold mb-4">{t.footer.navigation}</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="text-gray-400 hover:text-primary transition-colors text-sm">
-                  Главная
+                  {t.nav.home}
                 </Link>
               </li>
               <li>
                 <Link href="/map" className="text-gray-400 hover:text-primary transition-colors text-sm">
-                  Карта проблем
+                  {t.nav.map}
                 </Link>
               </li>
               <li>
                 <Link href="/create-request" className="text-gray-400 hover:text-primary transition-colors text-sm">
-                  Подать заявку
+                  {t.home.submitRequest}
                 </Link>
               </li>
               <li>
                 <Link href="/history" className="text-gray-400 hover:text-primary transition-colors text-sm">
-                  История заявок
+                  {t.nav.history}
                 </Link>
               </li>
             </ul>
@@ -49,7 +52,7 @@ export function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Контакты</h4>
+            <h4 className="text-white font-semibold mb-4">{t.footer.contacts}</h4>
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <MapPin className="w-4 h-4 text-primary shrink-0" />
@@ -74,10 +77,10 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Made in Kazakhstan */}
+          {/* Social Links */}
           <div className="flex flex-col items-start lg:items-end justify-between">
             <div>
-              <h4 className="text-white font-semibold mb-4 lg:text-right">Мы в соцсетях</h4>
+              <h4 className="text-white font-semibold mb-4 lg:text-right">{t.footer.services}</h4>
               <div className="flex gap-3">
                 <a 
                   href="#" 
@@ -114,7 +117,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-sm">
-            © 2024 Ertis Service. Все права защищены.
+            © 2025 Ertis Service. {t.footer.allRights}.
           </p>
           <p 
             className="text-2xl md:text-3xl font-bold"
@@ -125,11 +128,10 @@ export function Footer() {
               backgroundClip: 'text',
             }}
           >
-            Made in Kazakhstan
+            {t.footer.madeIn}
           </p>
         </div>
       </div>
     </footer>
   );
 }
-
