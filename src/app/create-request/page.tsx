@@ -25,9 +25,23 @@ export default function CreateRequestPage() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [showMap, setShowMap] = useState(false);
 
-  const categories: Record<string, { name: string; icon: typeof Zap; color: string; problems: { id: string; label: string }[] }> = {
+  // Категории должны ТОЧНО совпадать с названиями в базе данных бэкенда
+  const categories: Record<string, { name: string; displayName: string; icon: typeof Zap; color: string; problems: { id: string; label: string }[] }> = {
+    water: {
+      name: "Водоснабжение", // Точное имя в БД
+      displayName: t.categories.water,
+      icon: Droplet,
+      color: "from-blue-500 to-cyan-500",
+      problems: [
+        { id: "no_water", label: "Нет воды" },
+        { id: "leak", label: "Протечка" },
+        { id: "broken_pipe", label: "Прорыв трубы" },
+        { id: "dirty_water", label: "Грязная вода" },
+      ],
+    },
     electricity: {
-      name: t.categories.electricity,
+      name: "Электричество", // Точное имя в БД
+      displayName: t.categories.electricity,
       icon: Zap,
       color: "from-yellow-500 to-orange-500",
       problems: [
@@ -36,50 +50,48 @@ export default function CreateRequestPage() {
         { id: "no_power", label: "Отсутствует электричество" },
       ],
     },
-    water: {
-      name: t.categories.water,
-      icon: Droplet,
-      color: "from-blue-500 to-cyan-500",
-      problems: [
-        { id: "no_water", label: "Нет воды" },
-        { id: "leak", label: "Протечка" },
-        { id: "broken_pipe", label: "Прорыв трубы" },
-      ],
-    },
     roads: {
-      name: t.categories.roads,
+      name: "Дорожное покрытие", // Точное имя в БД
+      displayName: t.categories.roads,
       icon: Construction,
       color: "from-gray-500 to-slate-600",
       problems: [
         { id: "pothole", label: "Яма на дороге" },
         { id: "crack", label: "Трещина в покрытии" },
+        { id: "broken_curb", label: "Разрушенный бордюр" },
       ],
     },
     garbage: {
-      name: t.categories.garbage,
+      name: "Вывоз мусора", // Точное имя в БД
+      displayName: t.categories.garbage,
       icon: Trash2,
       color: "from-green-500 to-emerald-600",
       problems: [
         { id: "overflowing", label: "Переполненный контейнер" },
         { id: "no_collection", label: "Не вывозят мусор" },
+        { id: "illegal_dump", label: "Стихийная свалка" },
       ],
     },
     cleaning: {
-      name: t.categories.cleaning,
+      name: "Уборка территории", // Точное имя в БД
+      displayName: t.categories.cleaning,
       icon: Sparkles,
       color: "from-purple-500 to-pink-500",
       problems: [
         { id: "no_cleaning", label: "Не убирают территорию" },
         { id: "snow", label: "Не убирают снег" },
+        { id: "dirty_yard", label: "Грязный двор" },
       ],
     },
     landscaping: {
-      name: t.categories.landscaping,
+      name: "Благоустройство", // Точное имя в БД
+      displayName: t.categories.landscaping,
       icon: TreeDeciduous,
       color: "from-emerald-500 to-teal-500",
       problems: [
         { id: "broken_bench", label: "Сломанная скамейка" },
         { id: "playground", label: "Сломанная площадка" },
+        { id: "no_lighting", label: "Нет освещения во дворе" },
       ],
     },
   };
@@ -261,7 +273,7 @@ export default function CreateRequestPage() {
 
           <h1 className="text-2xl text-center text-white font-bold mb-8">
             {step === 1 && t.request.selectCategory}
-            {step === 2 && `${t.request.section}: ${currentCategory?.name}`}
+            {step === 2 && `${t.request.section}: ${currentCategory?.displayName}`}
             {step === 3 && t.request.descriptionAndPhoto}
           </h1>
 
@@ -291,7 +303,7 @@ export default function CreateRequestPage() {
                       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
                         <Icon className="w-6 h-6 text-white" />
                       </div>
-                      <span className="text-white font-medium text-sm">{cat.name}</span>
+                      <span className="text-white font-medium text-sm">{cat.displayName}</span>
                     </button>
                   );
                 })}

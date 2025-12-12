@@ -80,14 +80,15 @@ export default function WorkerDashboard() {
     try {
       const token = localStorage.getItem('access_token');
       
-      await fetch(`${API_BASE}/requests/${taskId}/start`, {
+      const response = await fetch(`${API_BASE}/requests/${taskId}/start`, {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
-      setTasks(prev => prev.map(t => 
-        t.id === taskId ? { ...t, status: 'in_progress' } : t
-      ));
+      if (response.ok) {
+        // Перезагружаем для синхронизации
+        await loadTasks();
+      }
     } catch (err) {
       console.error('Error:', err);
     }
@@ -101,15 +102,16 @@ export default function WorkerDashboard() {
       const formData = new FormData();
       formData.append('completion_note', 'Выполнено');
 
-      await fetch(`${API_BASE}/requests/${taskId}/complete`, {
+      const response = await fetch(`${API_BASE}/requests/${taskId}/complete`, {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
 
-      setTasks(prev => prev.map(t => 
-        t.id === taskId ? { ...t, status: 'completed' } : t
-      ));
+      if (response.ok) {
+        // Перезагружаем для синхронизации
+        await loadTasks();
+      }
     } catch (err) {
       console.error('Error:', err);
     } finally {

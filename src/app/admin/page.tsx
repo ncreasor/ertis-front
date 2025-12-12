@@ -116,14 +116,16 @@ export default function AdminDashboard() {
     setAssigningEmployee(employeeId);
     try {
       const token = localStorage.getItem('access_token');
-      await fetch(`${API_BASE}/requests/${requestId}/assign`, {
+      const response = await fetch(`${API_BASE}/requests/${requestId}/assign`, {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ employee_id: employeeId })
       });
-      setRequests(prev => prev.map(r => 
-        r.id === requestId ? { ...r, status: 'assigned', assignee_id: employeeId } : r
-      ));
+      
+      if (response.ok) {
+        // Перезагружаем данные с сервера для синхронизации
+        await loadData();
+      }
       setSelectedRequest(null);
     } catch (err) {
       console.error('Error:', err);
@@ -136,37 +138,33 @@ export default function AdminDashboard() {
     setActionLoading(requestId);
     try {
       const token = localStorage.getItem('access_token');
+      let response;
       
       if (newStatus === 'in_progress') {
-        await fetch(`${API_BASE}/requests/${requestId}/start`, {
+        response = await fetch(`${API_BASE}/requests/${requestId}/start`, {
           method: 'PATCH',
           headers: { 'Authorization': `Bearer ${token}` }
         });
       } else if (newStatus === 'completed') {
-        const formData = new FormData();
-        formData.append('completion_note', 'Завершено администратором');
-        await fetch(`${API_BASE}/requests/${requestId}/complete`, {
+        // Используем новый endpoint для смены статуса
+        response = await fetch(`${API_BASE}/requests/${requestId}/status?new_status=completed`, {
           method: 'PATCH',
-          headers: { 'Authorization': `Bearer ${token}` },
-          body: formData
+          headers: { 'Authorization': `Bearer ${token}` }
         });
       } else if (newStatus === 'closed') {
-        await fetch(`${API_BASE}/requests/${requestId}`, {
+        response = await fetch(`${API_BASE}/requests/${requestId}/status?new_status=closed`, {
           method: 'PATCH',
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: 'closed' })
+          headers: { 'Authorization': `Bearer ${token}` }
         });
       } else if (newStatus === 'pending') {
-        await fetch(`${API_BASE}/requests/${requestId}`, {
+        response = await fetch(`${API_BASE}/requests/${requestId}/status?new_status=pending`, {
           method: 'PATCH',
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: 'pending', assignee_id: null })
+          headers: { 'Authorization': `Bearer ${token}` }
         });
       }
       
-      setRequests(prev => prev.map(r => 
-        r.id === requestId ? { ...r, status: newStatus } : r
-      ));
+      // Перезагружаем данные с сервера для синхронизации
+      await loadData();
       setActionMenuId(null);
     } catch (err) {
       console.error('Error:', err);
@@ -181,11 +179,15 @@ export default function AdminDashboard() {
     setActionLoading(requestId);
     try {
       const token = localStorage.getItem('access_token');
-      await fetch(`${API_BASE}/requests/${requestId}`, {
+      const response = await fetch(`${API_BASE}/requests/${requestId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      setRequests(prev => prev.filter(r => r.id !== requestId));
+      
+      if (response.ok) {
+        // Перезагружаем данные с сервера для синхронизации
+        await loadData();
+      }
       setActionMenuId(null);
     } catch (err) {
       console.error('Error:', err);
