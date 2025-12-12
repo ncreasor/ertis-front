@@ -32,6 +32,14 @@ const statusLabels: Record<string, string> = {
   closed: "Закрыто",
 };
 
+const API_BASE = 'https://ertis-servise-ertis-service.up.railway.app';
+
+function getImageUrl(url: string | null): string | null {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  return `${API_BASE}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
 export default function HistoryPage() {
   const [requests, setRequests] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -137,9 +145,10 @@ export default function HistoryPage() {
                     {request.photo_url && (
                       <div className="my-3">
                         <img 
-                          src={request.photo_url} 
+                          src={getImageUrl(request.photo_url) || ''} 
                           alt="Фото проблемы"
                           className="w-full h-48 object-cover rounded-lg"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                         />
                       </div>
                     )}
@@ -169,9 +178,10 @@ export default function HistoryPage() {
                       <div className="my-3">
                         <p className="text-xs text-gray-400 mb-2">Фото после выполнения:</p>
                         <img 
-                          src={request.completion_photo_url} 
+                          src={getImageUrl(request.completion_photo_url) || ''} 
                           alt="Фото после выполнения"
                           className="w-full h-48 object-cover rounded-lg"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                         />
                       </div>
                     )}

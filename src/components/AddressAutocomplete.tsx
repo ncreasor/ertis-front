@@ -70,7 +70,7 @@ export function AddressAutocomplete({
   }, []);
 
   useEffect(() => {
-    if (!ymapsReady || !value || value.length < 3) {
+    if (!ymapsReady || !value || value.length < 2) {
       setSuggestions([]);
       return;
     }
@@ -78,20 +78,20 @@ export function AddressAutocomplete({
     const timeoutId = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const results = await window.ymaps.suggest(value, {
-          results: 3,
-          boundedBy: [[51.8, 76.5], [52.8, 77.5]] // Bounds for Pavlodar region
+        const searchQuery = value.toLowerCase().includes('павлодар') ? value : `Павлодар, ${value}`;
+        const results = await window.ymaps.suggest(searchQuery, {
+          results: 5
         });
 
         setSuggestions(results || []);
-        setShowSuggestions(true);
+        setShowSuggestions(results && results.length > 0);
       } catch (err) {
         console.error('Suggest error:', err);
         setSuggestions([]);
       } finally {
         setIsLoading(false);
       }
-    }, 300); // Debounce
+    }, 200);
 
     return () => clearTimeout(timeoutId);
   }, [value, ymapsReady]);

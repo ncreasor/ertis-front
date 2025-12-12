@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-type Language = 'ru' | 'kz';
+type Language = 'ru' | 'kz' | 'en';
 
 interface LanguageSwitcherProps {
   className?: string;
@@ -17,7 +17,7 @@ export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem('language') as Language;
-    if (saved) setLanguage(saved);
+    if (saved && ['ru', 'kz', 'en'].includes(saved)) setLanguage(saved);
   }, []);
 
   if (!mounted) {
@@ -35,11 +35,13 @@ export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
     setLanguage(lang);
     localStorage.setItem('language', lang);
     setIsOpen(false);
+    window.location.reload();
   };
 
   const languages = {
     ru: { label: 'RU', flag: '/russia-flag.svg', name: 'Русский' },
     kz: { label: 'KZ', flag: '/kz-flag.svg', name: 'Қазақша' },
+    en: { label: 'EN', flag: '/uk-flag.svg', name: 'English' },
   };
 
   const current = languages[language];
